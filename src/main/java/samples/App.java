@@ -1,10 +1,7 @@
 package samples;
 
-import org.apache.commons.lang3.ObjectUtils;
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
@@ -32,7 +29,7 @@ public class App {
 
         // you must serve everything from a directory named after your app
         ContextHandler ch = new ContextHandler();
-        ch.setContextPath("/maven");
+        ch.setContextPath("/app-runner-home");
         ch.setHandler(handlers);
         jettyServer.setHandler(ch);
 
