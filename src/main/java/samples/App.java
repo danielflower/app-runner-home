@@ -17,10 +17,12 @@ public class App {
     public static final Logger log = LoggerFactory.getLogger(App.class);
     public static void main(String[] args) throws Exception {
 
-        // When run from app-runner, you must use the port set in the environment variable web.port
-        int port = Integer.parseInt(firstNonNull(System.getenv("web.port"), "8080"));
-        InetSocketAddress addr = new InetSocketAddress("localhost", port);
-        Server jettyServer = new Server(addr);
+        // When run from app-runner, you must use the port set in the environment variable APP_PORT
+        int port = Integer.parseInt(firstNonNull(System.getenv("APP_PORT"), "8080"));
+        // All URLs must be prefixed with the app name, which is got via the APP_NAME env var.
+        String appName = firstNonNull(System.getenv("APP_NAME"), "my-app");
+
+        Server jettyServer = new Server(new InetSocketAddress("localhost", port));
         jettyServer.setStopAtShutdown(true);
 
         HandlerList handlers = new HandlerList();
@@ -29,13 +31,13 @@ public class App {
 
         // you must serve everything from a directory named after your app
         ContextHandler ch = new ContextHandler();
-        ch.setContextPath("/app-runner-home");
+        ch.setContextPath("/" + appName);
         ch.setHandler(handlers);
         jettyServer.setHandler(ch);
 
         jettyServer.start();
 
-        log.info("Started app at http://localhost:" + port + ch.getContextPath());
+        log.info("Started " + appName + " at http://localhost:" + port + ch.getContextPath());
 
         jettyServer.join();
     }
