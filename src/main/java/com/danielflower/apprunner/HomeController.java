@@ -51,7 +51,7 @@ public class HomeController extends AbstractHandler {
             }
         } catch (Exception e) {
             response.setStatus(500);
-            response.getWriter().write("Error while processing " + request.getRequestURI() + ": " + e);
+            log.error("Error while processing " + request.getRequestURI(), e);
             baseRequest.setHandled(true);
             return;
         }
