@@ -71,13 +71,14 @@ public class App {
         if (isLocal) {
             resolver = new FileTemplateResolver();
             resolver.setPrefix("src/main/resources/views/");
+            resolver.setCacheable(false);
         } else {
             resolver = new ClassLoaderTemplateResolver(App.class.getClassLoader());
             resolver.setPrefix("/views/");
+            resolver.setCacheable(true);
         }
         resolver.setTemplateMode(TemplateMode.HTML);
         resolver.setCharacterEncoding("UTF-8");
-        resolver.setCacheable(false);
         resolver.setCheckExistence(true);
         engine.setTemplateResolver(resolver);
         return engine;
@@ -89,7 +90,7 @@ public class App {
             resourceHandler.setResourceBase("src/main/resources/web");
             resourceHandler.setMinMemoryMappedContentLength(-1);
         } else {
-            resourceHandler.setBaseResource(Resource.newClassPathResource("/web", false, false));
+            resourceHandler.setBaseResource(Resource.newClassPathResource("/web", true, false));
         }
         return resourceHandler;
     }

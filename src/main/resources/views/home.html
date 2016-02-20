@@ -21,6 +21,8 @@
     <div class="app-container">
         <div class="app-item" th:each="app : ${apps}">
             <h2><a href="/" th:href="${app.url}" th:text="${app.name}">app-name</a></h2>
+            <a href="/app-name.html" th:href="@{{name}.html(name=${app.name})}">More details</a>
+
         </div>
     </div>
 
