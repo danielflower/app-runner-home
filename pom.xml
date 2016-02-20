@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>samples</groupId>
+    <groupId>com.danielflower.apprunner</groupId>
     <artifactId>app-runner-home</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -54,10 +54,20 @@
             <version>${jetty.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.thymeleaf</groupId>
+            <artifactId>thymeleaf</artifactId>
+            <version>3.0.0.BETA01</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-client</artifactId>
             <version>${jetty.version}</version>
-            <scope>test</scope>
         </dependency>
 
 
@@ -106,7 +116,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>samples.App</mainClass>
+                                    <mainClass>com.danielflower.apprunner.App</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

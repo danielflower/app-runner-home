@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>App Runner Launch Pad</title>
+    <link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<header>
+    <h1>App Runner</h1>
+</header>
+
+<main>
+
+    <p>App Runner hosts Java, Node, and Clojure web-apps. After some simple set up, just push changes to
+        the app's git repo and it will automatically be built and deployed here.</p>
+
+    <h2>Apps</h2>
+
+    <div class="app-container">
+        <div class="app-item" th:each="app : ${apps}">
+            <h2><a href="/" th:href="${app.url}" th:text="${app.name}">app-name</a></h2>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    <a href="https://github.com/danielflower/app-runner">App Runner source on GitHub</a>
+</footer>
+
+</body>
+</html>
