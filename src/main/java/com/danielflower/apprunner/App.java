@@ -17,6 +17,7 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.FileTemplateResolver;
 
 import java.net.InetSocketAddress;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
 
@@ -38,13 +39,13 @@ public class App {
 
         HandlerList handlers = new HandlerList();
 
-        String appRunnerRestUrlBase = (firstNonNull(System.getenv("APP_REST_URL_BASE_V1"), "http://localhost:8080/api/v1"));
+        Optional<String> appRunnerRestUrlBase = isLocal ? Optional.of("http://localhost:8080") : Optional.empty();
         HttpClient client = new HttpClient(new SslContextFactory(true));
         client.start();
 
         TemplateEngine engine = createTemplateEngine(isLocal);
 
-        handlers.addHandler(new HomeController(appRunnerRestUrlBase, client, engine));
+        handlers.addHandler(new HomeController(client, engine, appRunnerRestUrlBase));
         handlers.addHandler(resourceHandler(isLocal));
 
         // you must serve everything from a directory named after your app

@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -24,28 +25,32 @@ import java.util.regex.Pattern;
 public class HomeController extends AbstractHandler {
     public static final Logger log = LoggerFactory.getLogger(HomeController.class);
     public static final Pattern APP_URL_PATTERN = Pattern.compile("/([^/]+)\\.html");
-    private final String appRunnerRestUrl;
     private final HttpClient client;
     private TemplateEngine engine;
+    private final Optional<String> appRunnerUrl;
 
-    public HomeController(String appRunnerRestUrl, HttpClient client, TemplateEngine engine) {
-        this.appRunnerRestUrl = appRunnerRestUrl;
+    public HomeController(HttpClient client, TemplateEngine engine, Optional<String> appRunnerUrl) {
         this.client = client;
         this.engine = engine;
+        this.appRunnerUrl = appRunnerUrl;
     }
 
     @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
         WebContext context = new WebContext(request, response, request.getServletContext());
+
+        String currentUrl = request.getScheme() + "://" + request.getHeader("Host");
+        String appRunnerRestUrl = appRunnerUrl.orElse(currentUrl);
+
         Model model;
         Matcher appMatcher = APP_URL_PATTERN.matcher(target);
         try {
             if (target.equals("/")) {
-                model = list();
+                model = list(appRunnerRestUrl);
             } else if (appMatcher.matches()) {
                 String appName = appMatcher.group(1);
-                model = viewApp(appName);
+                model = viewApp(appName, appRunnerRestUrl);
             } else {
                 return;
             }
@@ -57,24 +62,24 @@ public class HomeController extends AbstractHandler {
         }
 
         context.setVariables(model.variables);
-        context.setVariable("host", context.getRequest().getScheme() + "://" + context.getRequest().getHeader("Host"));
+        context.setVariable("host", currentUrl);
+        context.setVariable("restUrl", appRunnerRestUrl);
         engine.process(model.viewName, context, response.getWriter());
 
         baseRequest.setHandled(true);
     }
 
-    private Model list() throws Exception {
-        return model("home.html", jsonToMap(httpGet("/apps")));
+    private Model list(String restBase) throws Exception {
+        return model("home.html", jsonToMap(httpGet(restBase + "/api/v1/apps")));
     }
 
-    private Model viewApp(String appName) throws Exception {
+    private Model viewApp(String appName, String restBase) throws Exception {
         Map<String, Object> variables = new HashMap<>();
-        variables.put("app", jsonToMap(httpGet("/apps/" + appName)));
+        variables.put("app", jsonToMap(httpGet(restBase + "/api/v1/apps/" + appName)));
         return model("app.html", variables);
     }
 
-    private String httpGet(String relativeUrl) throws InterruptedException, ExecutionException, TimeoutException {
-        String uri = appRunnerRestUrl + relativeUrl;
+    private String httpGet(String uri) throws InterruptedException, ExecutionException, TimeoutException {
         log.info("GET " + uri);
         return client.GET(uri).getContentAsString();
     }
