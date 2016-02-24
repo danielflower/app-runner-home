@@ -39,8 +39,7 @@ public class HomeController extends AbstractHandler {
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
         WebContext context = new WebContext(request, response, baseRequest.getServletContext());
-
-        String currentUrl = request.getScheme() + "://" + baseRequest.getHeader("Host");
+        String currentUrl = request.getScheme() + "://" + request.getHeader("Host");
         String appRunnerRestUrl = appRunnerUrl.orElse(currentUrl);
         log.info("Rest URL is " + appRunnerRestUrl + " - host is " + request.getHeader("Host"));
 
