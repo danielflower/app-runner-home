@@ -4,7 +4,7 @@ body {
     font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-header h1 {
+header {
     border: 5px solid #ffe44a;
     border-right-width: 0;
     border-left-width: 0;
@@ -12,13 +12,21 @@ header h1 {
     margin: 0;
     padding: 5px 30px 5px 5px;
     color: White;
-    text-align: right;
+    line-height: 20pt;
+}
+header h1 {
+    padding: 0; margin: 0;
+    color: White;
     font-style: italic;
     font-size: 20pt;
+    float: right;
 }
-header h1 a, header h1 a:visited {
+header a, header a:visited {
     color: White;
     text-decoration: none;
+}
+header nav a {
+    padding-right: 20px;
 }
 
 main {

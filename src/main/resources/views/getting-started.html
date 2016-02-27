@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Getting started with App Runner</title>
+    <link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<header th:replace="base.html :: header"></header>
+
+<main>
+
+    <h2>Getting started</h2>
+
+    <h3>Step 1: Create an application</h3>
+
+    <p>App Runner builds, deploys and runs web applications. When it starts your app, it will pass in the following environment variables:</p>
+    <ul>
+        <li><code>APP_PORT</code> which is a port to host a web server on</li>
+        <li><code>APP_NAME</code> which is a path name that all requests must be served from.</li>
+    </ul>
+    <p>In other words, your app should be listening on <code>http://localhost:{APP_PORT}/{APP_NAME}/</code></p>
+
+    <p>There are a number of sample apps to get you started:</p>
+    <ul>
+        <li th:each="sample : ${samples}"><a href="sample.zip" th:href="${sample.url}" th:text="${sample.name}">name</a></li>
+    </ul>
+
+    <h3>Step 2: Prepare a Git Repo</h3>
+
+    <p>Push your app to a Git server such as GitHub or an internal Git Server. App Runner needs to have read access
+    to your repository - HTTP/HTTPS URLs should allow anonymous access. For SSH URLs, the repository needs to have
+    the App Runner server's public key associated with it.</p>
+
+    <p>The public key of the App Runner server is:</p>
+    <pre th:text="*{publicKey}?: '(public key not detected)'" style="word-wrap: break-word;background-color:#DDDDDD;padding:10px">
+KEY
+    </pre>
+
+    <h3>Step 3: Register your app</h3>
+
+    <form method="POST" action="/api/v1/apps" th:action="@{{prefix}/api/v1/apps(prefix=${restUrl})}">
+        <label>Git URL<br><input type="url" name="gitUrl" required></label><br>
+        <label>App Name - leave blank to use name based on the Git URL (should be lowercase with no spaces and is the value
+            that corresponds to the <code>APP_NAME</code> env var)<br><input type="text" name="appName"
+        pattern="[a-z0-9-_]*"></label><br>
+        <input type="submit" value="Register app">
+    </form>
+
+    <h3>Step 4: Deploy your app</h3>
+
+    <p>After making changes to your repository, an HTTP POST request needs to be make to the app runner
+    server to notify App Runner that there are changes. You can use a post-receive hook on a Git server,
+    or cURL, or this website, or any other method you want.</p>
+
+    <pre th:text="@{{prefix}/api/v1/apps/((your app name))/deploy(prefix=${restUrl})}">
+
+    </pre>
+
+</main>
+
+<footer th:replace="base.html :: footer"></footer>
+
+</body>
+</html>

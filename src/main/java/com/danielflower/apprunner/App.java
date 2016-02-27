@@ -25,14 +25,24 @@ public class App {
     public static final Logger log = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) throws Exception {
+        try {
+            String env = firstNonNull(System.getenv("APP_ENV"), "local"); // "prod" or "local"
+            boolean isLocal = "local".equals(env);
 
-        String env = firstNonNull(System.getenv("APP_ENV"), "local"); // "prod" or "local"
-        boolean isLocal = "local".equals(env);
+            // When run from app-runner, you must use the port set in the environment variable APP_PORT
+            int port = Integer.parseInt(firstNonNull(System.getenv("APP_PORT"), "8081"));
+            // All URLs must be prefixed with the app name, which is got via the APP_NAME env var.
+            String appName = firstNonNull(System.getenv("APP_NAME"), "app-runner-home");
 
-        // When run from app-runner, you must use the port set in the environment variable APP_PORT
-        int port = Integer.parseInt(firstNonNull(System.getenv("APP_PORT"), "8081"));
-        // All URLs must be prefixed with the app name, which is got via the APP_NAME env var.
-        String appName = firstNonNull(System.getenv("APP_NAME"), "app-runner-home");
+
+            start(isLocal, port, appName);
+        } catch (Exception e) {
+            log.error("Error on startup", e);
+            System.exit(1);
+        }
+    }
+
+    private static void start(boolean isLocal, int port, String appName) throws Exception {
 
         Server jettyServer = new Server(new InetSocketAddress("localhost", port));
         jettyServer.setStopAtShutdown(true);

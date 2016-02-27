@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>App Runner Launch Pad</title>
+    <link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<header th:fragment="common_header">
+    <h1><a href="/app-runner-home/">App Runner</a></h1>
+    <nav>
+        <a href="/app-runner-home/">Home</a>
+        <a href="/app-runner-home/getting-started">Getting started</a>
+    </nav>
+
+</header>
+
+<main>
+    <h2>Sample header</h2>
+    <p>Sample content</p>
+</main>
+
+<footer th:fragment="footer()">
+    <a href="https://github.com/danielflower/app-runner">App Runner source on GitHub</a>
+</footer>
+
+</body>
+</html>

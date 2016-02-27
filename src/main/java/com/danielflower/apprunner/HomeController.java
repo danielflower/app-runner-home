@@ -2,6 +2,7 @@ package com.danielflower.apprunner;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -13,6 +14,7 @@ import org.thymeleaf.context.WebContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +50,8 @@ public class HomeController extends AbstractHandler {
         try {
             if (target.equals("/")) {
                 model = list(appRunnerRestUrl);
+            } else if (target.equals("/getting-started")) {
+                model = gettingStarted(appRunnerRestUrl);
             } else if (appMatcher.matches()) {
                 String appName = appMatcher.group(1);
                 model = viewApp(appName, appRunnerRestUrl);
@@ -55,7 +59,7 @@ public class HomeController extends AbstractHandler {
                 return;
             }
         } catch (Exception e) {
-            response.setStatus(500);
+            response.sendError(500, "Internal Server Error");
             log.error("Error while processing " + request.getRequestURI(), e);
             baseRequest.setHandled(true);
             return;
@@ -71,6 +75,15 @@ public class HomeController extends AbstractHandler {
 
     private Model list(String restBase) throws Exception {
         return model("home.html", jsonToMap(httpGet(restBase + "/api/v1/apps")));
+    }
+
+    private Model gettingStarted(String restBase) throws Exception {
+        Map<String, Object> vars = jsonToMap(httpGet(restBase + "/api/v1/system"));
+        File publicKey = new File(System.getProperty("user.home") + "/.ssh/id_rsa.pub");
+        if (publicKey.isFile()) {
+            vars.put("publicKey", FileUtils.readFileToString(publicKey));
+        }
+        return model("getting-started.html", vars);
     }
 
     private Model viewApp(String appName, String restBase) throws Exception {

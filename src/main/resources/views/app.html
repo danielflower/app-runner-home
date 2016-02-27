@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>App Runner Launch Pad</title>
@@ -7,9 +7,7 @@
 </head>
 <body>
 
-<header>
-    <h1><a href="/app-runner-home/">App Runner</a></h1>
-</header>
+<header th:replace="base.html :: header"></header>
 
 <main>
     <h2 th:text="${app.name}">App Name</h2>
@@ -24,9 +22,7 @@
 
 </main>
 
-<footer>
-    <a href="https://github.com/danielflower/app-runner">App Runner source on GitHub</a>
-</footer>
+<footer th:replace="base.html :: footer"></footer>
 
 </body>
 </html>
