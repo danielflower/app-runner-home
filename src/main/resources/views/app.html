@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>App Runner Launch Pad</title>
+    <title th:text="@{{name} launcher(name=${app.name})}"></title>
     <link rel="stylesheet" href="site.css">
 </head>
 <body>
@@ -18,6 +18,18 @@
     </ul>
 
 
+    <h3>Contribute</h3>
+
+    <p>Clone <code th:text="${app.gitUrl}"></code> and push your changes.</p>
+
+    <h3>Deploy</h3>
+
+    <p>Make a POST request to <code th:text="${app.deployUrl}"></code> or run it now:</p>
+
+    <form th:action="${app.deployUrl}" method="POST" class="deploy-form">
+        <input type="submit" value="Deploy now">
+        <pre class="output"></pre>
+    </form>
 
 
 </main>
@@ -25,4 +37,5 @@
 <footer th:replace="base.html :: footer"></footer>
 
 </body>
+<script src="deploy.js"></script>
 </html>

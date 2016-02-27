@@ -24,15 +24,6 @@
         </div>
     </div>
 
-
-    <h2>Add an existing app</h2>
-    <form method="POST" action="/api/v1/apps" th:action="@{{prefix}/api/v1/apps(prefix=${restUrl})}">
-        <label>Git URL<br><input type="url" name="gitUrl" required></label><br>
-        <label>URL path (optional - should be lowercase with no spaces)<br><input type="text" name="appName"
-        pattern="[a-z0-9-_]*"></label><br>
-        <input type="submit" value="Add">
-    </form>
-
 </main>
 
 <footer th:replace="base.html :: footer"></footer>
