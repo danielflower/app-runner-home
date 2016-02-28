@@ -17,10 +17,11 @@
 
     <p>App Runner builds, deploys and runs web applications. When it starts your app, it will pass in the following environment variables:</p>
     <ul>
-        <li><code>APP_PORT</code> which is a port to host a web server on</li>
-        <li><code>APP_NAME</code> which is a path name that all requests must be served from.</li>
+        <li><code>APP_PORT</code> - a port to host a web server on</li>
+        <li><code>APP_NAME</code> - the path your web service must serve requests on, i.e. <code>http://localhost:{APP_PORT}/{APP_NAME}/*</code></li>
+        <li><code>APP_DATA</code> - a directory path where you can store data</li>
+        <li><code>TEMP</code> - a path to a temp folder</li>
     </ul>
-    <p>In other words, your app should be listening on <code>http://localhost:{APP_PORT}/{APP_NAME}/</code></p>
 
     <p>There are a number of sample apps to get you started:</p>
     <ul>

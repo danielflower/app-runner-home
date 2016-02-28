@@ -79,9 +79,13 @@ public class HomeController extends AbstractHandler {
 
     private Model gettingStarted(String restBase) throws Exception {
         Map<String, Object> vars = jsonToMap(httpGet(restBase + "/api/v1/system"));
-        File publicKey = new File(System.getProperty("user.home") + "/.ssh/id_rsa.pub");
-        if (publicKey.isFile()) {
-            vars.put("publicKey", FileUtils.readFileToString(publicKey));
+        try {
+            File publicKey = new File(System.getProperty("user.home") + "/.ssh/id_rsa.pub");
+            if (publicKey.isFile()) {
+                vars.put("publicKey", FileUtils.readFileToString(publicKey));
+            }
+        } catch (IOException e) {
+            log.info("Could not read the public key of this server", e);
         }
         return model("getting-started.html", vars);
     }
