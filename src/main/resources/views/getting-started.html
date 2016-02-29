@@ -42,7 +42,7 @@ KEY
     <h3>Step 3: Register your app</h3>
 
     <form method="POST" action="/api/v1/apps" th:action="@{{prefix}/api/v1/apps(prefix=${restUrl})}">
-        <label>Git URL<br><input type="url" name="gitUrl" required></label><br>
+        <label>Git URL<br><input type="text" name="gitUrl" required></label><br>
         <label>App Name - leave blank to use name based on the Git URL (should be lowercase with no spaces and is the value
             that corresponds to the <code>APP_NAME</code> env var)<br><input type="text" name="appName"
         pattern="[a-z0-9-_]*"></label><br>

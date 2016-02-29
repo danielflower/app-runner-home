@@ -63,10 +63,10 @@ footer a, footer a:visited {
 }
 
 .deploy-form .output {
-    max-width: 90%;
+    width: 100%;
     border: 1px dashed #DDDDDD;
     overflow-x: auto;
-    overflow-y: auto;
+    overflow-y: scroll;
     height: auto;
     max-height: 400px;
 }
