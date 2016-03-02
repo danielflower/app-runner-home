@@ -43,7 +43,6 @@ public class HomeController extends AbstractHandler {
         WebContext context = new WebContext(request, response, baseRequest.getServletContext());
         String currentUrl = request.getScheme() + "://" + request.getHeader("Host");
         String appRunnerRestUrl = appRunnerUrl.orElse(currentUrl);
-        log.info("Rest URL is " + appRunnerRestUrl + " - host is " + request.getHeader("Host"));
 
         Model model;
         Matcher appMatcher = APP_URL_PATTERN.matcher(target);

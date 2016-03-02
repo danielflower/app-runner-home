@@ -17,9 +17,11 @@
     <h2>Apps</h2>
 
     <div class="app-container">
-        <div class="app-item" th:each="app : ${apps}">
-            <h2><a href="/" th:href="${app.url}" th:text="${app.name}">app-name</a></h2>
-            <a href="/app-name.html" th:href="@{{name}.html(name=${app.name})}">More details</a>
+        <div class="app-item" th:each="app : ${apps}"
+             th:style="@{background: url('screenshots?url={url}');(url=${app.url})}">
+            <div class="links">
+                <h2><a href="/" th:href="${app.url}" th:text="${app.name}">app-name</a></h2>
+                <a href="/app-name.html" th:href="@{{name}.html(name=${app.name})}">More details &gt;&gt;</a></div>
 
         </div>
     </div>

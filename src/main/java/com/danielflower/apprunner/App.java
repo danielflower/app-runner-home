@@ -16,6 +16,8 @@ import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.FileTemplateResolver;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 
@@ -28,6 +30,7 @@ public class App {
         try {
             String env = firstNonNull(System.getenv("APP_ENV"), "local"); // "prod" or "local"
             boolean isLocal = "local".equals(env);
+            File tempDir = new File(firstNonNull(System.getenv("TEMP"), "target/data"));
 
             // When run from app-runner, you must use the port set in the environment variable APP_PORT
             int port = Integer.parseInt(firstNonNull(System.getenv("APP_PORT"), "8081"));
@@ -35,14 +38,14 @@ public class App {
             String appName = firstNonNull(System.getenv("APP_NAME"), "app-runner-home");
 
 
-            start(isLocal, port, appName);
+            start(isLocal, port, appName, tempDir);
         } catch (Exception e) {
             log.error("Error on startup", e);
             System.exit(1);
         }
     }
 
-    private static void start(boolean isLocal, int port, String appName) throws Exception {
+    private static void start(boolean isLocal, int port, String appName, File tempDir) throws Exception {
 
         Server jettyServer = new Server(new InetSocketAddress("localhost", port));
         jettyServer.setStopAtShutdown(true);
@@ -56,6 +59,8 @@ public class App {
         TemplateEngine engine = createTemplateEngine(isLocal);
 
         handlers.addHandler(new HomeController(client, engine, appRunnerRestUrlBase));
+
+        addScreenshotHandlerIfPhantomJSIsAvailable(tempDir, handlers);
         handlers.addHandler(resourceHandler(isLocal));
 
         // you must serve everything from a directory named after your app
@@ -74,6 +79,20 @@ public class App {
         log.info("Started " + appName + " at http://localhost:" + port + ch.getContextPath());
 
         jettyServer.join();
+    }
+
+    private static void addScreenshotHandlerIfPhantomJSIsAvailable(File dataDir, HandlerList handlers) throws IOException {
+        String phantomjsBinPath = System.getenv("PHANTOMJS_BIN");
+        if (phantomjsBinPath == null) {
+            log.warn("No PHANTOMJS_BIN env var set, so no screenshots are available");
+        } else {
+            File phantomjsBin = new File(phantomjsBinPath);
+            if (!phantomjsBin.isFile()) {
+                log.warn("Could not find " + phantomjsBin.getCanonicalPath() + " so no screenshots are available");
+            } else {
+                handlers.addHandler(new WebpageScreenshotHandler(dataDir, phantomjsBin));
+            }
+        }
     }
 
     private static TemplateEngine createTemplateEngine(boolean isLocal) {
