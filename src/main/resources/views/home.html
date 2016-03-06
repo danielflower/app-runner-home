@@ -21,7 +21,7 @@
              th:style="@{background: url('screenshots?url={url}');(url=${app.url})}">
             <div class="links">
                 <h2><a href="/" th:href="${app.url}" th:text="${app.name}">app-name</a></h2>
-                <h5 th:text="${app.contributors}">Contributors: </h5>
+                <h5 >Contributors: <span th:text="${app.contributors}">contributors</span></h5>
                 <a href="/app-name.html" th:href="@{{name}.html(name=${app.name})}">More details &gt;&gt;</a></div>
 
         </div>
