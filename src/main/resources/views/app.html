@@ -11,7 +11,7 @@
 
 <main>
     <h2 th:text="${app.name}">App Name</h2>
-    <h5 th:text="${app.contributors}">contributors</h5>
+    <h5>Contributors: <span th:text="${app.contributors}"></span></h5>
     <ul>
         <li><a href="/" th:href="${app.url}">Launch app &gt;&gt;</a></li>
         <li><a href="/" th:href="${app.buildLogUrl}">Build logs &gt;&gt;</a></li>
