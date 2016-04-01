@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.slf4j.Logger;
@@ -25,8 +26,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HomeController extends AbstractHandler {
-    public static final Logger log = LoggerFactory.getLogger(HomeController.class);
-    public static final Pattern APP_URL_PATTERN = Pattern.compile("/([^/]+)\\.html");
+    private static final Logger log = LoggerFactory.getLogger(HomeController.class);
+    private static final Pattern APP_URL_PATTERN = Pattern.compile("/([^/]+)\\.html");
     private final HttpClient client;
     private TemplateEngine engine;
     private final Optional<String> appRunnerUrl;
@@ -51,6 +52,8 @@ public class HomeController extends AbstractHandler {
                 model = list(appRunnerRestUrl);
             } else if (target.equals("/getting-started")) {
                 model = gettingStarted(appRunnerRestUrl);
+            } else if (target.equals("/docs/api.html")) {
+                model = swaggerDocs(appRunnerRestUrl);
             } else if (appMatcher.matches()) {
                 String appName = appMatcher.group(1);
                 model = viewApp(appName, appRunnerRestUrl);
@@ -89,6 +92,12 @@ public class HomeController extends AbstractHandler {
         return model("getting-started.html", vars);
     }
 
+    private Model swaggerDocs(String restBase) throws Exception {
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("swaggerJsonUrl", restBase + "/api/v1/swagger.json");
+        return model("swagger-docs.html", vars);
+    }
+
     private Model viewApp(String appName, String restBase) throws Exception {
         Map<String, Object> variables = new HashMap<>();
         variables.put("app", jsonToMap(httpGet(restBase + "/api/v1/apps/" + appName)));
@@ -97,7 +106,12 @@ public class HomeController extends AbstractHandler {
 
     private String httpGet(String uri) throws InterruptedException, ExecutionException, TimeoutException {
         log.info("GET " + uri);
-        return client.GET(uri).getContentAsString();
+        ContentResponse response = client.GET(uri);
+        String content = response.getContentAsString();
+        if (response.getStatus() != 200) {
+            throw new RuntimeException(response.getStatus() + " while loading " + uri + ". Content was: " + content);
+        }
+        return content;
     }
 
     private static Map<String, Object> jsonToMap(String appsJson) {

@@ -4,7 +4,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -19,6 +19,8 @@ import org.thymeleaf.templateresolver.FileTemplateResolver;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
@@ -50,7 +52,7 @@ public class App {
         Server jettyServer = new Server(new InetSocketAddress("localhost", port));
         jettyServer.setStopAtShutdown(true);
 
-        HandlerList handlers = new HandlerList();
+        ContextHandlerCollection handlers = new ContextHandlerCollection();
 
         Optional<String> appRunnerRestUrlBase = isLocal ? Optional.of("http://localhost:8080") : Optional.empty();
         HttpClient client = new HttpClient(new SslContextFactory(true));
@@ -58,16 +60,13 @@ public class App {
 
         TemplateEngine engine = createTemplateEngine(isLocal);
 
-        handlers.addHandler(new HomeController(client, engine, appRunnerRestUrlBase));
+        String contextPath = "/" + appName;
+        addScreenshotHandlerIfPhantomJSIsAvailable(tempDir, handlers, contextPath);
+        handlers.addHandler(toContext(new HomeController(client, engine, appRunnerRestUrlBase), contextPath));
+        handlers.addHandler(toContext(resourceHandler(isLocal), contextPath));
+        handlers.addHandler(toContext(swaggerUIHandler(), contextPath + "/docs"));
 
-        addScreenshotHandlerIfPhantomJSIsAvailable(tempDir, handlers);
-        handlers.addHandler(resourceHandler(isLocal));
-
-        // you must serve everything from a directory named after your app
-        ContextHandler ch = new ContextHandler();
-        ch.setContextPath("/" + appName);
-        ch.setHandler(handlers);
-        jettyServer.setHandler(ch);
+        jettyServer.setHandler(handlers);
 
         try {
             jettyServer.start();
@@ -76,12 +75,24 @@ public class App {
             System.exit(1);
         }
 
-        log.info("Started " + appName + " at http://localhost:" + port + ch.getContextPath());
+        log.info("Started " + appName + " at http://localhost:" + port + contextPath);
 
         jettyServer.join();
     }
 
-    private static void addScreenshotHandlerIfPhantomJSIsAvailable(File dataDir, HandlerList handlers) throws IOException {
+    private static ResourceHandler swaggerUIHandler() throws URISyntaxException {
+        ResourceHandler rh = new ResourceHandler();
+        String dirPath = "META-INF/resources/webjars/swagger-ui/2.1.4";
+        URL swaggerHTMLResourceBase = App.class.getClassLoader().getResource(dirPath);
+        if (swaggerHTMLResourceBase == null) {
+            throw new RuntimeException("Could not find " + dirPath + " on classpath. It is expected to come from the swagger-ui jar");
+        }
+        rh.setResourceBase(swaggerHTMLResourceBase.toURI().toString());
+        rh.setEtags(true);
+        return rh;
+    }
+
+    private static void addScreenshotHandlerIfPhantomJSIsAvailable(File dataDir, ContextHandlerCollection handlers, String contextPath) throws IOException {
         String phantomjsBinPath = System.getenv("PHANTOMJS_BIN");
         if (phantomjsBinPath == null) {
             log.warn("No PHANTOMJS_BIN env var set, so no screenshots are available");
@@ -90,7 +101,7 @@ public class App {
             if (!phantomjsBin.isFile()) {
                 log.warn("Could not find " + phantomjsBin.getCanonicalPath() + " so no screenshots are available");
             } else {
-                handlers.addHandler(new WebpageScreenshotHandler(dataDir, phantomjsBin));
+                handlers.addHandler(toContext(new WebpageScreenshotHandler(dataDir, phantomjsBin), contextPath));
             }
         }
     }
@@ -114,7 +125,7 @@ public class App {
         return engine;
     }
 
-    private static Handler resourceHandler(boolean useFileSystem) {
+    private static ResourceHandler resourceHandler(boolean useFileSystem) {
         ResourceHandler resourceHandler = new ResourceHandler();
         if (useFileSystem) {
             resourceHandler.setResourceBase("src/main/resources/web");
@@ -123,6 +134,13 @@ public class App {
             resourceHandler.setBaseResource(Resource.newClassPathResource("/web", true, false));
         }
         return resourceHandler;
+    }
+
+    private static ContextHandler toContext(Handler handler, String contextPath) {
+        ContextHandler context = new ContextHandler();
+        context.setContextPath(contextPath);
+        context.setHandler(handler);
+        return context;
     }
 
 }
