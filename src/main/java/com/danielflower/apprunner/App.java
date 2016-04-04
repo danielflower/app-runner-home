@@ -21,24 +21,23 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 import java.util.Optional;
 
-import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
-
 public class App {
-    public static final Logger log = LoggerFactory.getLogger(App.class);
+    private static final Logger log = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) throws Exception {
         try {
-            String env = firstNonNull(System.getenv("APP_ENV"), "local"); // "prod" or "local"
+            Map<String, String> settings = System.getenv();
+            String env = settings.getOrDefault("APP_ENV", "local"); // "prod" or "local"
             boolean isLocal = "local".equals(env);
-            File tempDir = new File(firstNonNull(System.getenv("TEMP"), "target/data"));
+            File tempDir = new File(settings.getOrDefault("TEMP", "target/data"));
 
             // When run from app-runner, you must use the port set in the environment variable APP_PORT
-            int port = Integer.parseInt(firstNonNull(System.getenv("APP_PORT"), "8081"));
+            int port = Integer.parseInt(settings.getOrDefault("APP_PORT", "8081"));
             // All URLs must be prefixed with the app name, which is got via the APP_NAME env var.
-            String appName = firstNonNull(System.getenv("APP_NAME"), "app-runner-home");
-
+            String appName = settings.getOrDefault("APP_NAME", "app-runner-home");
 
             start(isLocal, port, appName, tempDir);
         } catch (Exception e) {
