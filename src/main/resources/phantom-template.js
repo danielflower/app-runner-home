@@ -8,6 +8,8 @@ var height = 400;
 page.viewportSize = { width: width, height: height };
 page.clipRect = { top: 0, left: 0, width: width, height: height };
 page.open(url, function() {
-    page.render(output);
-    phantom.exit();
+    window.setTimeout(function () {
+        page.render(output);
+        phantom.exit();
+    }, 5000); // sleep a bit before taking a screenshot to allow the page to load async stuff
 });

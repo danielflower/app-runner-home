@@ -101,6 +101,7 @@ public class App {
             if (!phantomjsBin.isFile()) {
                 log.warn("Could not find " + phantomjsBin.getCanonicalPath() + " so no screenshots are available");
             } else {
+                log.info("Will use " + phantomjsBinPath + " to create screenshots in " + dataDir.getCanonicalPath());
                 handlers.addHandler(toContext(new WebpageScreenshotHandler(dataDir, phantomjsBin), contextPath));
             }
         }
