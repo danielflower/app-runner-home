@@ -11,6 +11,12 @@
 
 <main>
     <h2 th:text="${app.name}">App Name</h2>
+
+    <div class="app-screenshot">
+        <a href="/" th:href="${app.url}"><img th:src="@{screenshots?url={url}(url=${app.url})}"></a>
+        <br><a th:href="@{screenshots?refresh=true&url={url}(url=${app.url})}">(refresh)</a>
+    </div>
+
     <h5>Contributors: <span th:text="${app.contributors}"></span></h5>
     <ul>
         <li><a href="/" th:href="${app.url}">Launch app &gt;&gt;</a></li>

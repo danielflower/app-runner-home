@@ -1,5 +1,6 @@
 package com.danielflower.apprunner;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -32,21 +33,21 @@ public class App {
             Map<String, String> settings = System.getenv();
             String env = settings.getOrDefault("APP_ENV", "local"); // "prod" or "local"
             boolean isLocal = "local".equals(env);
-            File tempDir = new File(settings.getOrDefault("TEMP", "target/data"));
+            File dataDir = new File(settings.getOrDefault("APP_DATA", "target/data"));
 
             // When run from app-runner, you must use the port set in the environment variable APP_PORT
             int port = Integer.parseInt(settings.getOrDefault("APP_PORT", "8081"));
             // All URLs must be prefixed with the app name, which is got via the APP_NAME env var.
             String appName = settings.getOrDefault("APP_NAME", "app-runner-home");
 
-            start(isLocal, port, appName, tempDir);
+            start(isLocal, port, appName, dataDir);
         } catch (Exception e) {
             log.error("Error on startup", e);
             System.exit(1);
         }
     }
 
-    private static void start(boolean isLocal, int port, String appName, File tempDir) throws Exception {
+    private static void start(boolean isLocal, int port, String appName, File dataDir) throws Exception {
 
         Server jettyServer = new Server(new InetSocketAddress("localhost", port));
         jettyServer.setStopAtShutdown(true);
@@ -60,7 +61,7 @@ public class App {
         TemplateEngine engine = createTemplateEngine(isLocal);
 
         String contextPath = "/" + appName;
-        addScreenshotHandlerIfPhantomJSIsAvailable(tempDir, handlers, contextPath);
+        addScreenshotHandlerIfPhantomJSIsAvailable(new File(dataDir, "screenshots"), handlers, contextPath);
         handlers.addHandler(toContext(new HomeController(client, engine, appRunnerRestUrlBase), contextPath));
         handlers.addHandler(toContext(resourceHandler(isLocal), contextPath));
         handlers.addHandler(toContext(swaggerUIHandler(), contextPath + "/docs"));
@@ -91,7 +92,7 @@ public class App {
         return rh;
     }
 
-    private static void addScreenshotHandlerIfPhantomJSIsAvailable(File dataDir, ContextHandlerCollection handlers, String contextPath) throws IOException {
+    private static void addScreenshotHandlerIfPhantomJSIsAvailable(File screenshotDir, ContextHandlerCollection handlers, String contextPath) throws IOException {
         String phantomjsBinPath = System.getenv("PHANTOMJS_BIN");
         if (phantomjsBinPath == null) {
             log.warn("No PHANTOMJS_BIN env var set, so no screenshots are available");
@@ -100,8 +101,9 @@ public class App {
             if (!phantomjsBin.isFile()) {
                 log.warn("Could not find " + phantomjsBin.getCanonicalPath() + " so no screenshots are available");
             } else {
-                log.info("Will use " + phantomjsBinPath + " to create screenshots in " + dataDir.getCanonicalPath());
-                handlers.addHandler(toContext(new WebpageScreenshotHandler(dataDir, phantomjsBin), contextPath));
+                log.info("Will use " + phantomjsBinPath + " to create screenshots in " + screenshotDir.getCanonicalPath());
+                FileUtils.forceMkdir(screenshotDir);
+                handlers.addHandler(toContext(new WebpageScreenshotHandler(screenshotDir, phantomjsBin), contextPath));
             }
         }
     }

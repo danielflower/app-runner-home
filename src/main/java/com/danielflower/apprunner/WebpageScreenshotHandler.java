@@ -40,20 +40,35 @@ public class WebpageScreenshotHandler extends AbstractHandler {
         }
 
         File png = new File(dataDir, url.replaceAll("\\W+", "") + ".png");
-        synchronized (this) {
-            if (!png.isFile()) {
-                File scriptFile = new File(dataDir, "phantomscript-" + UUID.randomUUID() + ".js");
-                String scriptPath = scriptFile.getCanonicalPath();
-                log.info("Going to generate screenshot for " + png.getName());
-                FileUtils.write(scriptFile,
-                    template
-                        .replace("{{url-to-screenshot}}", url)
-                        .replace("{{output-path}}", png.getCanonicalPath().replace("\\", "\\\\"))
-                );
-                CommandLine command = new CommandLine(phantomjsBin).addArgument(scriptPath);
-                run(command, dataDir, SECONDS.toMillis(45));
-                FileUtils.deleteQuietly(scriptFile);
-                log.info("Screenshot created");
+        boolean refreshRequested = "true".equals(request.getParameter("refresh"));
+        if (png.exists() && refreshRequested) {
+            boolean deleted = FileUtils.deleteQuietly(png);
+            log.info("Requested to delete screenshot. Deleted? " + deleted);
+        }
+
+        if (!png.isFile()) {
+            synchronized (this) {
+                if (!png.isFile()) {
+                    log.info("Going to generate screenshot for " + png.getName());
+                    File scriptFile = new File(dataDir, "phantomscript-" + UUID.randomUUID() + ".js");
+                    String scriptPath = scriptFile.getCanonicalPath();
+                    FileUtils.write(scriptFile,
+                        template
+                            .replace("{{url-to-screenshot}}", url)
+                            .replace("{{output-path}}", png.getCanonicalPath().replace("\\", "\\\\"))
+                    );
+                    CommandLine command = new CommandLine(phantomjsBin).addArgument(scriptPath);
+                    try {
+                        run(command, dataDir, SECONDS.toMillis(45));
+                    } catch (Exception e) {
+                        log.warn("Error while creating screenshot", e);
+                        response.sendError(500, "Error creating screenshot: " + e.getMessage());
+                        baseRequest.setHandled(true);
+                        return;
+                    }
+                    FileUtils.deleteQuietly(scriptFile);
+                    log.info("Screenshot created");
+                }
             }
         }
 
@@ -61,11 +76,15 @@ public class WebpageScreenshotHandler extends AbstractHandler {
             try (InputStream reader = new BufferedInputStream(new FileInputStream(png));
                  ServletOutputStream responseStream = response.getOutputStream()) {
                 response.setContentType("image/png");
-                response.setHeader("Cache-Control", "public, max-age=" + HOURS.toSeconds(8));
+                if (!refreshRequested) {
+                    response.setHeader("Cache-Control", "public, max-age=" + HOURS.toSeconds(8));
+                }
                 IOUtils.copy(reader, responseStream);
             }
-            baseRequest.setHandled(true);
+        } else {
+            response.sendError(404, "Not found");
         }
+        baseRequest.setHandled(true);
 
     }
 

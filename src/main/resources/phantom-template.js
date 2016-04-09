@@ -11,5 +11,5 @@ page.open(url, function() {
     window.setTimeout(function () {
         page.render(output);
         phantom.exit();
-    }, 5000); // sleep a bit before taking a screenshot to allow the page to load async stuff
+    }, 10000); // sleep a bit before taking a screenshot to allow the page to load async stuff
 });

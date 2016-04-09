@@ -89,3 +89,14 @@ footer a, footer a:visited {
     height: auto;
     max-height: 400px;
 }
+
+.app-screenshot {
+    float: right;
+    max-width: 100%;
+    width: 30%;
+}
+
+.app-screenshot img {
+    width: 100%;
+    border: solid 1px #ffb340;
+}
