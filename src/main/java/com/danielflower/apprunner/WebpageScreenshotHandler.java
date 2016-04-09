@@ -65,9 +65,9 @@ public class WebpageScreenshotHandler extends AbstractHandler {
                         response.sendError(500, "Error creating screenshot: " + e.getMessage());
                         baseRequest.setHandled(true);
                         return;
+                    } finally {
+                        FileUtils.deleteQuietly(scriptFile);
                     }
-                    FileUtils.deleteQuietly(scriptFile);
-                    log.info("Screenshot created");
                 }
             }
         }
@@ -76,9 +76,8 @@ public class WebpageScreenshotHandler extends AbstractHandler {
             try (InputStream reader = new BufferedInputStream(new FileInputStream(png));
                  ServletOutputStream responseStream = response.getOutputStream()) {
                 response.setContentType("image/png");
-                if (!refreshRequested) {
-                    response.setHeader("Cache-Control", "public, max-age=" + HOURS.toSeconds(8));
-                }
+                String cacheControl = refreshRequested ? "no-store" : "public, max-age=" + HOURS.toSeconds(8);
+                response.setHeader("Cache-Control", cacheControl);
                 IOUtils.copy(reader, responseStream);
             }
         } else {
