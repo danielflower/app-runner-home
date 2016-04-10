@@ -81,7 +81,7 @@ public class HomeController extends AbstractHandler {
     private Model list(String restBase) throws Exception {
         Map<String, Object> apps = jsonToMap(httpGet(restBase + "/api/v1/apps"));
         List<Map<String,Object>> all = (List<Map<String, Object>>) apps.get("apps");
-        Predicate<Map<String, Object>> isAvailable = app -> "true".equals(app.get("isAvailable"));
+        Predicate<Map<String, Object>> isAvailable = app -> (boolean)app.get("available");
         List<Map<String, Object>> running = all.stream().filter(isAvailable).collect(Collectors.toList());
         List<Map<String, Object>> notRunning = all.stream().filter(isAvailable.negate()).collect(Collectors.toList());
         return model("home.html", new HashMap<String, Object>() {{
