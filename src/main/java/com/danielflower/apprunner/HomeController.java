@@ -18,12 +18,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class HomeController extends AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(HomeController.class);
@@ -76,7 +79,15 @@ public class HomeController extends AbstractHandler {
     }
 
     private Model list(String restBase) throws Exception {
-        return model("home.html", jsonToMap(httpGet(restBase + "/api/v1/apps")));
+        Map<String, Object> apps = jsonToMap(httpGet(restBase + "/api/v1/apps"));
+        List<Map<String,Object>> all = (List<Map<String, Object>>) apps.get("apps");
+        Predicate<Map<String, Object>> isAvailable = app -> "true".equals(app.get("isAvailable"));
+        List<Map<String, Object>> running = all.stream().filter(isAvailable).collect(Collectors.toList());
+        List<Map<String, Object>> notRunning = all.stream().filter(isAvailable.negate()).collect(Collectors.toList());
+        return model("home.html", new HashMap<String, Object>() {{
+            put("apps", running);
+            put("notRunning", notRunning);
+        }});
     }
 
     private Model gettingStarted(String restBase) throws Exception {

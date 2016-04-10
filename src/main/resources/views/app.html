@@ -17,6 +17,8 @@
         <br><a th:href="@{screenshots?refresh=true&url={url}(url=${app.url})}">(refresh)</a>
     </div>
 
+    <p>Status: <strong th:text="${app.availableStatus}">availability</strong></p>
+
     <h5>Contributors: <span th:text="${app.contributors}"></span></h5>
     <ul>
         <li><a href="/" th:href="${app.url}">Launch app &gt;&gt;</a></li>

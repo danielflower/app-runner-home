@@ -135,6 +135,7 @@ public class App {
         } else {
             resourceHandler.setBaseResource(Resource.newClassPathResource("/web", true, false));
         }
+        resourceHandler.setEtags(true);
         return resourceHandler;
     }
 

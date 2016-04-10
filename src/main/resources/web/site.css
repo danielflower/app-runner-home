@@ -100,3 +100,8 @@ footer a, footer a:visited {
     width: 100%;
     border: solid 1px #ffb340;
 }
+
+.not-running {
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+}
