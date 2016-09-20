@@ -2,8 +2,7 @@ package com.danielflower.apprunner;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.ResourceHandler;
@@ -49,7 +48,15 @@ public class App {
 
     private static void start(boolean isLocal, int port, String appName, File dataDir) throws Exception {
 
-        Server jettyServer = new Server(new InetSocketAddress("localhost", port));
+        Server jettyServer = new Server();
+        HttpConfiguration config = new HttpConfiguration();
+        config.addCustomizer(new ForwardedRequestCustomizer());
+        HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(config);
+        ServerConnector connector = new ServerConnector(jettyServer, httpConnectionFactory);
+        connector.setPort(port);
+        connector.setHost("localhost");
+
+        jettyServer.addConnector(connector);
         jettyServer.setStopAtShutdown(true);
 
         ContextHandlerCollection handlers = new ContextHandlerCollection();

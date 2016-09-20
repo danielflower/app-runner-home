@@ -57,7 +57,9 @@ public class WebpageScreenshotHandler extends AbstractHandler {
                             .replace("{{url-to-screenshot}}", url)
                             .replace("{{output-path}}", png.getCanonicalPath().replace("\\", "\\\\"))
                     );
-                    CommandLine command = new CommandLine(phantomjsBin).addArgument(scriptPath);
+                    CommandLine command = new CommandLine(phantomjsBin)
+                        .addArgument("--ignore-ssl-errors=yes") // to allow untrusted certs
+                        .addArgument(scriptPath);
                     try {
                         run(command, dataDir, SECONDS.toMillis(45));
                     } catch (Exception e) {
