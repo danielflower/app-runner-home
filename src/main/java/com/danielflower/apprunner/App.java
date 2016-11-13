@@ -18,7 +18,6 @@ import org.thymeleaf.templateresolver.FileTemplateResolver;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
@@ -54,14 +53,12 @@ public class App {
         HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(config);
         ServerConnector connector = new ServerConnector(jettyServer, httpConnectionFactory);
         connector.setPort(port);
-        connector.setHost("localhost");
-
         jettyServer.addConnector(connector);
         jettyServer.setStopAtShutdown(true);
 
         ContextHandlerCollection handlers = new ContextHandlerCollection();
 
-        Optional<String> appRunnerRestUrlBase = isLocal ? Optional.of("http://localhost:8080") : Optional.empty();
+        Optional<String> appRunnerRestUrlBase = isLocal ? Optional.of("https://localhost:8443") : Optional.empty();
         HttpClient client = new HttpClient(new SslContextFactory(true));
         client.start();
 
@@ -72,7 +69,6 @@ public class App {
         handlers.addHandler(toContext(new HomeController(client, engine, appRunnerRestUrlBase), contextPath));
         handlers.addHandler(toContext(resourceHandler(isLocal), contextPath));
         handlers.addHandler(toContext(swaggerUIHandler(), contextPath + "/docs"));
-
         jettyServer.setHandler(handlers);
 
         try {

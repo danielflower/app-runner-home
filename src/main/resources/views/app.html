@@ -18,7 +18,22 @@
         <br><a th:href="@{screenshots?refresh=true&url={url}(url=${app.url})}">(refresh)</a>
     </div>
 
-    <p>Status: <strong th:text="${app.availableStatus}">availability</strong></p>
+    <table class="systemTable">
+        <tbody>
+        <tr>
+            <th>Status</th>
+            <td><strong th:text="${app.availableStatus}">availability</strong></td>
+        </tr>
+        <tr>
+            <th>Host</th>
+            <td><code th:text="${app.host}">host</code> (<a href="/app-runner-home/system">more info</a>)</td>
+        </tr>
+        <tr>
+            <th>API</th>
+            <td><a th:href="@{{baseUrl}/api/v1/apps/{id}(id=${app.name},baseUrl=${restUrl})}" th:text="*{app.host}? 'see here'">host</a></td>
+        </tr>
+        </tbody>
+    </table>
 
     <h5>Contributors: <span th:text="${app.contributors}"></span></h5>
     <ul>

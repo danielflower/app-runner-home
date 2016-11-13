@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="UTF-8">
+    <title>App Runner System Info</title>
+    <link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<header th:replace="base.html :: header"></header>
+
+<main>
+
+    <h2>System Info</h2>
+
+    <p>All this information is also available via the <a href="/app-runner-home/docs/api.html#!/System/systemInfo">System API</a>.</p>
+
+    <h3>The router</h3>
+
+    <p><a href="https://github.com/danielflower/app-runner-router">App Runner Router</a> is being used.</p>
+
+    <table class="systemTable">
+        <tbody>
+        <tr>
+            <th>Host</th>
+            <td th:text="${instanceHost}">name</td>
+        </tr>
+        <tr>
+            <th>User</th>
+            <td th:text="${user}">name</td>
+        </tr>
+        <tr>
+            <th>Router version</th>
+            <td th:text="*{appRunnerVersion}?: 'unknown'">name</td>
+        </tr>
+        <tr>
+            <th>OS</th>
+            <td th:text="${os.osName}">name</td>
+        </tr>
+        <tr>
+            <th>PID</th>
+            <td th:text="${#numbers.formatInteger(os.appRunnerPid, 0)}">name</td>
+        </tr>
+        <tr>
+            <th>Up-time</th>
+            <td><span th:text="${#numbers.formatInteger(os.uptimeInSeconds, 0)}">name</span> seconds</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3>The instances</h3>
+
+    <div th:each="runner : ${runners}">
+        <h4 th:text="${runner.id}">Runner ID</h4>
+        <table class="systemTable">
+            <tbody>
+            <tr>
+                <th>Max number of apps</th>
+                <td th:text="${#numbers.formatInteger(runner.maxApps, 0)}">name</td>
+            </tr>
+            <tr>
+                <th>System URL</th>
+                <td><a href="/system" th:href="${runner.systemUrl}" th:text="${runner.systemUrl}">name</a></td>
+            </tr>
+            <tr>
+                <th>Host</th>
+                <td th:text="${runner.system.host}">name</td>
+            </tr>
+            <tr>
+                <th>User</th>
+                <td th:text="${runner.system.user}">name</td>
+            </tr>
+            <tr>
+                <th>App Runner version</th>
+                <td th:text="*{runner.system.appRunnerVersion}?: 'unknown'">name</td>
+            </tr>
+            <tr>
+                <th>OS</th>
+                <td th:text="${runner.system.os.osName}">name</td>
+            </tr>
+            <tr>
+                <th>PID</th>
+                <td th:text="${#numbers.formatInteger(runner.system.os.appRunnerPid, 0)}">name</td>
+            </tr>
+            <tr>
+                <th>Up-time</th>
+                <td><span th:text="${#numbers.formatInteger(runner.system.os.uptimeInSeconds, 0)}">name</span> seconds</td>
+            </tr>
+            <tr th:each="publicKey : ${publicKeys}">
+                <th>Public key</th>
+                <td><blockquote th:text="*{publicKey}?: '(public key not detected)'"
+                                style="background-color:#DDDDDD;padding:10px;font-family: 'Courier New',monospace;overflow-x: scroll; max-width: 400px">
+                    KEY
+                </blockquote></td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+</main>
+
+<footer th:replace="base.html :: footer"></footer>
+
+</body>
+</html>

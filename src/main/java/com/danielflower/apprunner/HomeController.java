@@ -55,6 +55,8 @@ public class HomeController extends AbstractHandler {
                 model = list(appRunnerRestUrl);
             } else if (target.equals("/getting-started")) {
                 model = gettingStarted(appRunnerRestUrl);
+            } else if (target.equals("/system")) {
+                model = systemInfo(appRunnerRestUrl);
             } else if (target.equals("/docs/api.html")) {
                 model = swaggerDocs(appRunnerRestUrl);
             } else if (appMatcher.matches()) {
@@ -102,6 +104,14 @@ public class HomeController extends AbstractHandler {
         }
         return model("getting-started.html", vars);
     }
+
+    private Model systemInfo(String restBase) throws Exception {
+        Map<String, Object> vars = jsonToMap(httpGet(restBase + "/api/v1/system"));
+        vars.put("instanceHost", vars.get("host")); // "host" gets overwritten elsewhere, so renaming here
+        String view = vars.containsKey("runners") ? "system-info-with-router.html" : "system-info.html";
+        return model(view, vars);
+    }
+
 
     private Model swaggerDocs(String restBase) throws Exception {
         Map<String, Object> vars = new HashMap<>();

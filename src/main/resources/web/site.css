@@ -105,3 +105,15 @@ footer a, footer a:visited {
     -webkit-filter: grayscale(100%);
     filter: grayscale(100%);
 }
+
+.systemTable {
+    border-collapse: collapse;
+}
+.systemTable th {
+    background-color: #ffe44a;
+}
+.systemTable th, .systemTable td {
+    border: 1px solid #ffb340;
+    text-align: left;
+    padding: 5px;
+}

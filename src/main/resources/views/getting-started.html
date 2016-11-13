@@ -43,33 +43,25 @@
         the App Runner server's public key associated with it.</p>
 
     <p>The public key of the App Runner server is:</p>
-    <blockquote th:text="*{publicKey}?: '(public key not detected)'"
-                style="word-wrap: break-word;background-color:#DDDDDD;padding:10px;font-family: 'Courier New',monospace">
-        KEY
-    </blockquote>
+    <div th:each="publicKey : ${publicKeys}">
+        <blockquote th:text="*{publicKey}?: '(public key not detected)'"
+                        style="word-wrap: break-word; background-color:#DDDDDD;padding:10px;font-family: 'Courier New',monospace;">
+            KEY
+        </blockquote>
+    </div>
 
-    <h3>Step 3: Register your app</h3>
+    <h3>Step 3: Register and deploy your app</h3>
 
-    <form method="POST" action="/api/v1/apps" th:action="@{{prefix}/api/v1/apps(prefix=${restUrl})}">
-        <label>Git URL<br><input type="text" name="gitUrl" required></label><br>
-        <label>App Name - leave blank to use name based on the Git URL (should be lowercase with no spaces and is the
-            value
-            that corresponds to the <code>APP_NAME</code> env var)<br><input type="text" name="appName"
-                                                                             pattern="[a-z0-9-_]*"></label><br>
-        <input type="submit" value="Register app">
-    </form>
+    <p>Both these steps can be done with the REST API:</p>
+    <ul>
+        <li><a href="http://localhost:8081/app-runner-home/docs/api.html#!/Application/create">Register</a></li>
+        <li><a href="http://localhost:8081/app-runner-home/docs/api.html#!/Application/deploy">Deploy</a></li>
+    </ul>
 
-    <h3>Step 4: Deploy your app</h3>
-
-    <p>After making changes to your repository, an HTTP POST request needs to be make to the app runner
-        server to notify App Runner that there are changes. You can use a post-receive hook on a Git server,
-        or cURL, or this website, or any other method you want.</p>
-
+    <p>To automatically deploy changes, set up a post-commit hook in your GIT server posting to the following URL:</p>
     <pre th:text="@{{prefix}/api/v1/apps/((your app name))/deploy(prefix=${restUrl})}">
 
     </pre>
-
-    <p>There is also a REST API that exposes app information <a href="/api/v1/apps">like this</a>.</p>
 
 </main>
 
