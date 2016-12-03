@@ -22,11 +22,13 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 public class WebpageScreenshotHandler extends AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(WebpageScreenshotHandler.class);
     private final File dataDir;
+    private final File tempDir;
     private final String template;
     private File phantomjsBin;
 
-    public WebpageScreenshotHandler(File dataDir, File phantomjsBin) throws IOException {
+    public WebpageScreenshotHandler(File dataDir, File tempDir, File phantomjsBin) throws IOException {
         this.dataDir = dataDir;
+        this.tempDir = tempDir;
         this.template = IOUtils.toString(
             WebpageScreenshotHandler.class.getResource("/phantom-template.js"));
         this.phantomjsBin = phantomjsBin;
@@ -50,7 +52,7 @@ public class WebpageScreenshotHandler extends AbstractHandler {
             synchronized (this) {
                 if (!png.isFile()) {
                     log.info("Going to generate screenshot for " + png.getName());
-                    File scriptFile = new File(dataDir, "phantomscript-" + UUID.randomUUID() + ".js");
+                    File scriptFile = new File(tempDir, "phantomscript-" + UUID.randomUUID() + ".js");
                     String scriptPath = scriptFile.getCanonicalPath();
                     FileUtils.write(scriptFile,
                         template
@@ -61,7 +63,7 @@ public class WebpageScreenshotHandler extends AbstractHandler {
                         .addArgument("--ignore-ssl-errors=yes") // to allow untrusted certs
                         .addArgument(scriptPath);
                     try {
-                        run(command, dataDir, SECONDS.toMillis(45));
+                        run(command, tempDir, SECONDS.toMillis(45));
                     } catch (Exception e) {
                         log.warn("Error while creating screenshot", e);
                         response.sendError(500, "Error creating screenshot: " + e.getMessage());
