@@ -44,7 +44,7 @@
         </tr>
         <tr>
             <th>Up-time</th>
-            <td><span th:text="${#numbers.formatInteger(os.uptimeInSeconds, 0)}">name</span> seconds</td>
+            <td><span th:text="${#numbers.formatInteger(os.uptimeInSeconds / 3600, 0)}">name</span> hours</td>
         </tr>
         </tbody>
     </table>
@@ -56,11 +56,19 @@
         <table class="systemTable">
             <tbody>
             <tr>
+                <th>Current number of apps</th>
+                <td th:text="${#numbers.formatInteger(runner.appCount, 0)}">name</td>
+            </tr>
+            <tr>
                 <th>Max number of apps</th>
                 <td th:text="${#numbers.formatInteger(runner.maxApps, 0)}">name</td>
             </tr>
             <tr>
-                <th>System URL</th>
+                <th>Apps API URL</th>
+                <td><a href="/system" th:href="${runner.appsUrl}" th:text="${runner.appsUrl}">name</a></td>
+            </tr>
+            <tr>
+                <th>System API URL</th>
                 <td><a href="/system" th:href="${runner.systemUrl}" th:text="${runner.systemUrl}">name</a></td>
             </tr>
             <tr>
@@ -85,7 +93,7 @@
             </tr>
             <tr>
                 <th>Up-time</th>
-                <td><span th:text="${#numbers.formatInteger(runner.system.os.uptimeInSeconds, 0)}">name</span> seconds</td>
+                <td><span th:text="${#numbers.formatInteger(runner.system.os.uptimeInSeconds / 3600, 0)}">name</span> hours</td>
             </tr>
             <tr th:each="publicKey : ${publicKeys}">
                 <th>Public key</th>
