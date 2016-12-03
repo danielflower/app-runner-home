@@ -50,6 +50,14 @@ footer a, footer a:visited {
     color: #92c2ff;
 }
 
+.app-filter {
+    padding: 0 0 10px;
+}
+.app-filter input {
+    width: 100%;
+    max-width: 600px;
+}
+
 .app-container {
     display: flex;
     flex-direction: row;

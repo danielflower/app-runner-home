@@ -17,9 +17,15 @@
 
     <h2>Apps</h2>
 
+    <div class="app-filter" th:if="${appCount} > 9">
+        <input type="search" autofocus placeholder="Filter by name...">
+        <p>Showing <strong class="app-count" th:text="${appCount}">0</strong> <span class="apps-text">apps</span>.</p>
+    </div>
+
     <div class="app-container">
         <div class="app-item" th:each="app : ${apps}"
-             th:style="@{background: url('screenshots?url={url}');(url=${app.url})}">
+             th:style="@{background: url('screenshots?url={url}');(url=${app.url})}"
+             th:data-app-name="${app.name}">
             <div class="links">
                 <h2><a href="/" th:href="${app.url}" th:text="${app.name}">app-name</a></h2>
                 <a href="/app-name.html" th:href="@{{name}.html(name=${app.name})}">More details &gt;&gt;</a></div>
@@ -28,7 +34,8 @@
 
     <div th:if="${not #lists.isEmpty(notRunning)}" class="app-container not-running">
         <div class="app-item" th:each="app : ${notRunning}"
-             th:style="@{background: url('screenshots?url={url}');(url=${app.url})}">
+             th:style="@{background: url('screenshots?url={url}');(url=${app.url})}"
+             th:data-app-name="${app.name}">
             <div class="links">
                 <h2 th:text="${app.name}">app-name</h2>
                 <a href="/app-name.html" th:href="@{{name}.html(name=${app.name})}">More details &gt;&gt;</a></div>
@@ -41,4 +48,5 @@
 <footer th:replace="base.html :: footer"></footer>
 
 </body>
+<script src="home.js"></script>
 </html>

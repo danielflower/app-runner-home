@@ -90,6 +90,7 @@ public class HomeController extends AbstractHandler {
         List<Map<String, Object>> notRunning = all.stream().filter(isAvailable.negate()).collect(Collectors.toList());
         return model("home.html", new HashMap<String, Object>() {{
             put("apps", running);
+            put("appCount", all.size());
             put("notRunning", notRunning);
         }});
     }

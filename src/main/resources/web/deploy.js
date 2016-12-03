@@ -1,4 +1,5 @@
-document.addEventListener("DOMContentLoaded", function (event) {
+'use strict';
+document.addEventListener("DOMContentLoaded", function () {
     if (!("fetch" in window)) {
         return;
     }
