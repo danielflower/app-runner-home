@@ -72,6 +72,8 @@ public class HomeController extends AbstractHandler {
             return;
         }
 
+        response.setHeader("X-UA-Compatible", "IE=edge");
+
         context.setVariables(model.variables);
         context.setVariable("host", currentUrl);
         context.setVariable("restUrl", appRunnerRestUrl);

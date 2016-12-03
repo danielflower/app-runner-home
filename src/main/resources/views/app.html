@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:text="@{{name} launcher(name=${app.name})}"></title>
     <link rel="stylesheet" href="site.css">
 </head>
@@ -36,7 +36,7 @@
     </table>
 
     <h5>Contributors: <span th:text="${app.contributors}"></span></h5>
-    <ul>
+    <ul class="app-actions">
         <li><a href="/" th:href="${app.url}">Launch app &gt;&gt;</a></li>
         <li><a href="/" th:href="${app.buildLogUrl}">Build logs &gt;&gt;</a></li>
         <li><a href="/" th:href="${app.consoleLogUrl}">Console logs &gt;&gt;</a></li>
