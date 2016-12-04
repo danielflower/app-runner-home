@@ -30,7 +30,7 @@ public class WebpageScreenshotHandler extends AbstractHandler {
         this.dataDir = dataDir;
         this.tempDir = tempDir;
         this.template = IOUtils.toString(
-            WebpageScreenshotHandler.class.getResource("/phantom-template.js"));
+            WebpageScreenshotHandler.class.getResource("/phantom-template.js"), "UTF-8");
         this.phantomjsBin = phantomjsBin;
     }
 
@@ -58,7 +58,7 @@ public class WebpageScreenshotHandler extends AbstractHandler {
                         template
                             .replace("{{url-to-screenshot}}", url)
                             .replace("{{output-path}}", png.getCanonicalPath().replace("\\", "\\\\"))
-                    );
+                        , "UTF-8");
                     CommandLine command = new CommandLine(phantomjsBin)
                         .addArgument("--ignore-ssl-errors=yes") // to allow untrusted certs
                         .addArgument(scriptPath);

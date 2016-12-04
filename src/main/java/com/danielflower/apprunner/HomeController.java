@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Predicate;
@@ -33,35 +32,32 @@ public class HomeController extends AbstractHandler {
     private static final Pattern APP_URL_PATTERN = Pattern.compile("/([^/]+)\\.html");
     private final HttpClient client;
     private TemplateEngine engine;
-    private final Optional<String> appRunnerUrl;
 
-    public HomeController(HttpClient client, TemplateEngine engine, Optional<String> appRunnerUrl) {
+    public HomeController(HttpClient client, TemplateEngine engine) {
         this.client = client;
         this.engine = engine;
-        this.appRunnerUrl = appRunnerUrl;
     }
 
     @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
         WebContext context = new WebContext(request, response, baseRequest.getServletContext());
-        String currentUrl = request.getScheme() + "://" + request.getHeader("Host");
-        String appRunnerRestUrl = appRunnerUrl.orElse(currentUrl);
+        String currentBaseUrl = request.getScheme() + "://" + request.getHeader("Host");
 
         Model model;
         Matcher appMatcher = APP_URL_PATTERN.matcher(target);
         try {
             if (target.equals("/")) {
-                model = list(appRunnerRestUrl);
+                model = list(currentBaseUrl);
             } else if (target.equals("/getting-started")) {
-                model = gettingStarted(appRunnerRestUrl);
+                model = gettingStarted(currentBaseUrl);
             } else if (target.equals("/system")) {
-                model = systemInfo(appRunnerRestUrl);
+                model = systemInfo(currentBaseUrl);
             } else if (target.equals("/docs/api.html")) {
-                model = swaggerDocs(appRunnerRestUrl);
+                model = swaggerDocs();
             } else if (appMatcher.matches()) {
                 String appName = appMatcher.group(1);
-                model = viewApp(appName, appRunnerRestUrl);
+                model = viewApp(appName, currentBaseUrl);
             } else {
                 return;
             }
@@ -74,9 +70,8 @@ public class HomeController extends AbstractHandler {
 
         response.setHeader("X-UA-Compatible", "IE=edge");
 
+        model.variables.put("baseUrl", currentBaseUrl);
         context.setVariables(model.variables);
-        context.setVariable("host", currentUrl);
-        context.setVariable("restUrl", appRunnerRestUrl);
         engine.process(model.viewName, context, response.getWriter());
 
         baseRequest.setHandled(true);
@@ -100,7 +95,7 @@ public class HomeController extends AbstractHandler {
         try {
             File publicKey = new File(System.getProperty("user.home") + "/.ssh/id_rsa.pub");
             if (publicKey.isFile()) {
-                vars.put("publicKey", FileUtils.readFileToString(publicKey));
+                vars.put("publicKey", FileUtils.readFileToString(publicKey, "UTF-8"));
             }
         } catch (IOException e) {
             log.info("Could not read the public key of this server", e);
@@ -116,10 +111,8 @@ public class HomeController extends AbstractHandler {
     }
 
 
-    private Model swaggerDocs(String restBase) throws Exception {
-        Map<String, Object> vars = new HashMap<>();
-        vars.put("swaggerJsonUrl", restBase + "/api/v1/swagger.json");
-        return model("swagger-docs.html", vars);
+    private Model swaggerDocs() throws Exception {
+        return model("swagger-docs.html", new HashMap<>());
     }
 
     private Model viewApp(String appName, String restBase) throws Exception {

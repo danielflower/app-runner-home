@@ -58,10 +58,7 @@
         <li><a href="/app-runner-home/docs/api.html#!/Application/deploy">Deploy</a></li>
     </ul>
 
-    <p>To automatically deploy changes, set up a post-commit hook in your GIT server posting to the following URL:</p>
-    <pre th:text="@{{prefix}/api/v1/apps/((your app name))/deploy(prefix=${restUrl})}">
-
-    </pre>
+    <p>To automatically deploy changes, set up a post-commit hook in your GIT server POSTing to <code>/api/v1/apps/((your app name))/deploy</code></p>
 
 </main>
 

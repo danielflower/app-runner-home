@@ -30,7 +30,7 @@
         </tr>
         <tr>
             <th>API</th>
-            <td><a th:href="@{{baseUrl}/api/v1/apps/{id}(id=${app.name},baseUrl=${restUrl})}" th:text="*{app.host}? 'see here'">host</a></td>
+            <td><a th:href="@{{baseUrl}/api/v1/apps/{id}(id=${app.name},baseUrl=${baseUrl})}" th:text="*{app.host}? 'see here'">host</a></td>
         </tr>
         </tbody>
     </table>
