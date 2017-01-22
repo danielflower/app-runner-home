@@ -97,10 +97,13 @@
             </tr>
             <tr th:each="publicKey : ${publicKeys}">
                 <th>Public key</th>
-                <td><blockquote th:text="*{publicKey}?: '(public key not detected)'"
-                                style="background-color:#DDDDDD;padding:10px;font-family: 'Courier New',monospace;overflow-x: scroll; max-width: 400px">
+                <td><pre th:text="*{publicKey}?: '(public key not detected)'" class="overflower">
                     KEY
-                </blockquote></td>
+                </pre></td>
+            </tr>
+            <tr th:each="sample : ${runner.system.samples}">
+                <th th:text="${sample.name}">Runner</th>
+                <td><pre class="overflower" th:text="${sample.version}">1.0</pre></td>
             </tr>
             </tbody>
         </table>
