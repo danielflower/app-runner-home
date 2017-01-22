@@ -119,6 +119,12 @@ footer a, footer a:visited {
     }
 }
 
+.lastBuild {
+}
+.failed .lastBuildDescription {
+    color: red;
+}
+
 .app-screenshot img {
     width: 100%;
     border: solid 1px #ffb340;

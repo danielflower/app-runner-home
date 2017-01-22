@@ -47,8 +47,15 @@
 
     <p>Clone <code th:text="${app.gitUrl}"></code> and push your changes.</p>
 
-    <h3>Deploy</h3>
+    <div th:if="${app.lastBuild}" th:class="${'lastBuild ' + app.lastBuild.status}" th:with="commit=${app.lastBuild.commit}">
+        <h3>Last build</h3>
+        <span th:if="${app.lastBuild.runnerId}" th:text="${'Build type: ' + app.lastBuild.runnerId + '.'}">Build type: maven.</span>
+        <span class="lastBuildDescription" th:text="${app.lastBuild.description}">Complete success</span><br>
+        Git commit <code th:text="${commit.id}">2b0ebfefd637f4a64fad0686315faf17932af2cd</code> by <span th:text="${commit.author}">Author Name</span>:
+        <pre th:text="${commit.message}">Commit message</pre>
+    </div>
 
+    <h3>Deploy</h3>
     <p>Make a POST request to <code th:text="${app.deployUrl}"></code> or run it now:</p>
 
     <form th:action="${app.deployUrl}" method="POST" class="deploy-form">
