@@ -51,7 +51,8 @@
         <h3>Last build</h3>
         <span th:if="${app.lastBuild.runnerId}" th:text="${'Build type: ' + app.lastBuild.runnerId + '.'}">Build type: maven.</span>
         <span class="lastBuildDescription" th:text="${app.lastBuild.description}">Complete success</span><br>
-        Git commit <code th:text="${commit.id}">2b0ebfefd637f4a64fad0686315faf17932af2cd</code> by <span th:text="${commit.author}">Author Name</span>:
+        Git commit <code th:text="${commit.id}">2b0ebfefd637f4a64fad0686315faf17932af2cd</code> by <span th:text="${commit.author}">Author Name</span>
+        on <time th:text="${commit.dateISO}">some time</time>:
         <pre th:text="${commit.message}">Commit message</pre>
     </div>
 

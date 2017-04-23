@@ -103,6 +103,14 @@
                 <th>Up-time</th>
                 <td><span th:text="${#numbers.formatInteger(runner.system.os.uptimeInSeconds / 3600, 0)}">name</span> hours</td>
             </tr>
+            <tr th:if="${runner.system.backupInfo}" th:with="backup=${runner.system.backupInfo}">
+                <th>Last backup</th>
+                <td><time th:if="${backup.lastSuccessfulBackup}" th:text="${backup.lastSuccessfulBackup}">time</time> <span class="error" th:if="${backup.lastBackupError}" th:text="${backup.lastBackupError}">error</span></td>
+            </tr>
+            <tr th:if="${runner.system.backupInfo}" th:with="backup=${runner.system.backupInfo}">
+                <th>Backup URL</th>
+                <td><code th:text="${backup.backupUrl}">ssh://blah</code></td>
+            </tr>
             <tr th:each="publicKey : ${publicKeys}">
                 <th>Public key</th>
                 <td><pre th:text="*{publicKey}?: '(public key not detected)'" class="overflower">
