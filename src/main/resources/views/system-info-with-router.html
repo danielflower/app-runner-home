@@ -53,8 +53,16 @@
 
     <div th:each="runner : ${runners}">
         <h4 th:text="${runner.id}">Runner ID</h4>
-        <table class="systemTable">
+        <table class="systemTable" th:classappend="${runner.error} ? error : ok">
             <tbody>
+            <tr>
+                <th>ID</th>
+                <td th:text="${runner.id}">name</td>
+            </tr>
+            <tr th:if="${runner.error}">
+                <th>Error</th>
+                <td><strong th:text="${runner.error}">Error</strong></td>
+            </tr>
             <tr>
                 <th>Current number of apps</th>
                 <td th:text="${#numbers.formatInteger(runner.appCount, 0)}">name</td>
@@ -83,15 +91,15 @@
                 <th>App Runner version</th>
                 <td th:text="*{runner.system.appRunnerVersion}?: 'unknown'">name</td>
             </tr>
-            <tr>
+            <tr th:if="${runner.system.os}">
                 <th>OS</th>
                 <td th:text="${runner.system.os.osName}">name</td>
             </tr>
-            <tr>
+            <tr th:if="${runner.system.os}">
                 <th>PID</th>
                 <td th:text="${#numbers.formatInteger(runner.system.os.appRunnerPid, 0)}">name</td>
             </tr>
-            <tr>
+            <tr th:if="${runner.system.os}">
                 <th>Up-time</th>
                 <td><span th:text="${#numbers.formatInteger(runner.system.os.uptimeInSeconds / 3600, 0)}">name</span> hours</td>
             </tr>

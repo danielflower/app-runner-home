@@ -17,6 +17,15 @@
 
     <h2>Apps</h2>
 
+    <div class="app-errors" th:if="${not #lists.isEmpty(errors)}">
+        <strong>WARNING! Not all apps are listed:</strong>
+        <ul>
+            <li th:each="error : ${errors}" th:text="${error}">Error!</li>
+        </ul>
+        <p>See the <a href="/app-runner-home/system">system page</a> for more details.</p>
+    </div>
+
+
     <div class="app-filter" th:if="${appCount} > 9">
         <input type="search" autofocus placeholder="Filter by name...">
         <p>Showing <strong class="app-count" th:text="${appCount}">0</strong> <span class="apps-text">apps</span>.</p>

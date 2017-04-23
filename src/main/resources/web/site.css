@@ -139,10 +139,14 @@ footer a, footer a:visited {
 
 .systemTable {
     border-collapse: collapse;
+    width: 90%;
 }
 
 .systemTable th {
     background-color: #ffe44a;
+}
+.systemTable.error th {
+    background-color: Red;
 }
 
 .systemTable th, .systemTable td {
@@ -157,12 +161,21 @@ footer a, footer a:visited {
         padding: 15px 0;
     }
 }
+@media (min-width: 600px) {
+    .systemTable th {
+        white-space: nowrap;
+    }
+}
 
 .overflower {
     background-color: #DDDDDD;
     padding: 10px;
     font-family: 'Courier New', monospace;
     overflow-x: scroll;
-    max-width: 400px;
     margin: 0;
+    max-width: 70vw;
+}
+
+.app-errors strong {
+    color: Red;
 }

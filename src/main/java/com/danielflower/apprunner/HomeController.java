@@ -87,6 +87,7 @@ public class HomeController extends AbstractHandler {
             put("apps", running);
             put("appCount", all.size());
             put("notRunning", notRunning);
+            put("errors", apps.get("errors"));
         }});
     }
 
