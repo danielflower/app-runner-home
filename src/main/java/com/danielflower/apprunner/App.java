@@ -110,7 +110,7 @@ public class App {
 
     private static ResourceHandler swaggerUIHandler() throws URISyntaxException {
         ResourceHandler rh = new ResourceHandler();
-        String dirPath = "META-INF/resources/webjars/swagger-ui/3.18.2";
+        String dirPath = "META-INF/resources/webjars/swagger-ui/3.20.9";
         URL swaggerHTMLResourceBase = App.class.getClassLoader().getResource(dirPath);
         if (swaggerHTMLResourceBase == null) {
             throw new RuntimeException("Could not find " + dirPath + " on classpath. It is expected to come from the swagger-ui jar");

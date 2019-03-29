@@ -83,7 +83,7 @@
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>swagger-ui</artifactId>
-            <version>3.18.2</version>
+            <version>3.20.9</version> <!-- also need to change version in dirPath in App.java -->
             <scope>runtime</scope>
         </dependency>
 
